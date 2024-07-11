@@ -1,5 +1,6 @@
 package com.uber_project.LocationService.Service.Impl;
 
+import com.uber_project.LocationService.DTO.DriverLocationDto;
 import com.uber_project.LocationService.Service.LocationService;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
@@ -14,7 +15,7 @@ import java.util.List;
 public class LocationServiceImpl implements LocationService {
 
     private static final String DRIVER_GEO_OPS_KEY = "Driver";
-    private static final Double SEARCH_RADIUS= 20.0;
+    private static final Double SEARCH_RADIUS= 100.0;
     private final StringRedisTemplate stringRedisTemplate;
 
     LocationServiceImpl(StringRedisTemplate stringRedisTemplate){
@@ -34,7 +35,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public List<String> getNearbyDrivers(Double latitude, Double longitude) {
+    public List<DriverLocationDto> getNearbyDrivers(Double latitude, Double longitude) {
         GeoOperations<String, String> geoOps = stringRedisTemplate.opsForGeo();
         //Setting distance in kms
         Distance radius= new Distance(SEARCH_RADIUS, Metrics.KILOMETERS);
@@ -43,9 +44,16 @@ public class LocationServiceImpl implements LocationService {
 
         //Getting all the location points within given circle with key Driver
         GeoResults<RedisGeoCommands.GeoLocation<String>> results = geoOps.radius(DRIVER_GEO_OPS_KEY,withinCircle);
-        List<String> nearbyDrivers= new ArrayList<>();
+        List<DriverLocationDto> nearbyDrivers= new ArrayList<>();
         for(GeoResult<RedisGeoCommands.GeoLocation<String>> result: results){
-            nearbyDrivers.add(result.getContent().getName());
+            Point point= geoOps.position(DRIVER_GEO_OPS_KEY,result.getContent().getName()).get(0);
+            nearbyDrivers.add(
+                    DriverLocationDto.builder()
+                            .driverId(result.getContent().getName())
+                            .latitude(point.getX())
+                            .longitude(point.getY())
+                            .build()
+            );
         }
         return nearbyDrivers;
     }

@@ -41,9 +41,9 @@ public class LocationController {
 
 
     @GetMapping("/nearby/drivers")
-    public ResponseEntity<List<String>> nearbyDrivers(@RequestBody NearbyDriversRequestDto nearbyDriversRequestDto){
+    public ResponseEntity<List<DriverLocationDto>> nearbyDrivers(@RequestBody NearbyDriversRequestDto nearbyDriversRequestDto){
         try{
-            List<String> nearbyDriversInfo = locationService.getNearbyDrivers(nearbyDriversRequestDto.getLatitude(),nearbyDriversRequestDto.getLongitude());
+            List<DriverLocationDto> nearbyDriversInfo = locationService.getNearbyDrivers(nearbyDriversRequestDto.getLatitude(),nearbyDriversRequestDto.getLongitude());
             return new ResponseEntity<>(nearbyDriversInfo,HttpStatus.OK);
         }
         catch (Exception exception){

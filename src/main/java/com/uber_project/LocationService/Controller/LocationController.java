@@ -43,7 +43,7 @@ public class LocationController {
     @GetMapping("/nearby/drivers")
     public ResponseEntity<List<DriverLocationDto>> nearbyDrivers(@RequestBody NearbyDriversRequestDto nearbyDriversRequestDto){
         try{
-            List<DriverLocationDto> nearbyDriversInfo = locationService.getNearbyDrivers(nearbyDriversRequestDto.getLatitude(),nearbyDriversRequestDto.getLongitude());
+            List<DriverLocationDto> nearbyDriversInfo = locationService.getNearbyDrivers(nearbyDriversRequestDto.getLatitude(),nearbyDriversRequestDto.getLongitude(), nearbyDriversRequestDto.getRadius());
             return new ResponseEntity<>(nearbyDriversInfo,HttpStatus.OK);
         }
         catch (Exception exception){

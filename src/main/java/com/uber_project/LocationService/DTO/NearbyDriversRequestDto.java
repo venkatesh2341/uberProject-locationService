@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NearbyDriversRequestDto {
-    Double latitude;
-    Double longitude;
+    private Double latitude;
+    private Double longitude;
+    private Integer radius;
 }

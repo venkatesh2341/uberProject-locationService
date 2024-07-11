@@ -35,15 +35,23 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public List<DriverLocationDto> getNearbyDrivers(Double latitude, Double longitude) {
+    public List<DriverLocationDto> getNearbyDrivers(Double latitude, Double longitude, Integer radius) {
+
+
+        if(radius >=20)
+            return new ArrayList<>();
+
         GeoOperations<String, String> geoOps = stringRedisTemplate.opsForGeo();
         //Setting distance in kms
-        Distance radius= new Distance(SEARCH_RADIUS, Metrics.KILOMETERS);
+        Distance radiusVector= new Distance(radius, Metrics.KILOMETERS);
         // creates a circle with centre(latitude and longitude) and redius(distance)
-        Circle withinCircle= new Circle(new Point(latitude,longitude ),radius);
+        Circle withinCircle= new Circle(new Point(latitude,longitude ),radiusVector);
 
         //Getting all the location points within given circle with key Driver
         GeoResults<RedisGeoCommands.GeoLocation<String>> results = geoOps.radius(DRIVER_GEO_OPS_KEY,withinCircle);
+
+
+
         List<DriverLocationDto> nearbyDrivers= new ArrayList<>();
         for(GeoResult<RedisGeoCommands.GeoLocation<String>> result: results){
             Point point= geoOps.position(DRIVER_GEO_OPS_KEY,result.getContent().getName()).get(0);
@@ -55,6 +63,8 @@ public class LocationServiceImpl implements LocationService {
                             .build()
             );
         }
+        if(nearbyDrivers.isEmpty())
+            return getNearbyDrivers(latitude, longitude, radius + 3);
         return nearbyDrivers;
     }
 }

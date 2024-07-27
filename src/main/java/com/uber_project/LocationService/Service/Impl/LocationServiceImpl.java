@@ -44,7 +44,7 @@ public class LocationServiceImpl implements LocationService {
         GeoOperations<String, String> geoOps = stringRedisTemplate.opsForGeo();
         //Setting distance in kms
         Distance radiusVector= new Distance(radius, Metrics.KILOMETERS);
-        // creates a circle with centre(latitude and longitude) and redius(distance)
+        // creates a circle with centre(latitude and longitude) and radius(distance)
         Circle withinCircle= new Circle(new Point(latitude,longitude ),radiusVector);
 
         //Getting all the location points within given circle with key Driver
